@@ -2,7 +2,21 @@
 body {
   width: 400px;
   height: 500px;
-  padding: 20px;
+  margin: 0;
+  padding: 0;
+}
+
+.details th {
+  display: none;
+}
+
+.details table, .details td {
+  border-collapse: collapse; 
+}
+
+.details td {
+  padding: 4px;
+  border: 1px solid #c0c0c0;
 }
 
 #loader {
@@ -17,3 +31,34 @@ body {
   margin-left: auto;
   margin-right: auto;
 }
+
+.container {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  margin: 0;
+  padding-left: 0;
+  padding-right: 0;
+}
+
+.top {
+  height: 50px;
+  width: 100%;
+}
+
+.middle { 
+  flex-grow: 1; /* Set the middle element to grow and stretch */
+  width: 100%;
+  padding: 15px;
+}
+
+.bottom {
+  height: 50px;  
+  width: 100%;
+}
+
+
+/* 
+.item + .item { 
+  margin-left: 2%; 
+} */

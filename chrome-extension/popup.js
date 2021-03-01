@@ -14,11 +14,11 @@ copyButton.onclick = (event) => {
   return true
 }
 
-saveButton.onclick = (event) => {
-  chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
-    chrome.runtime.sendMessage({ type: 'bglog', obj: 'Selam!' })
-  })
-}
+// saveButton.onclick = (event) => {
+//   chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
+//     chrome.runtime.sendMessage({ type: 'bglog', obj: 'Selam!' })
+//   })
+// }
 
 chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
   chrome.tabs.sendMessage(tabs[0].id, { type: 'entry-request' }, handleNewEntry)
@@ -93,6 +93,7 @@ function bulurumEntryToDomainEntry(settings, bulurumEntry) {
 
   return {
     id: null,
+    type: 'entry',
     inspectedOn: new Date().toISOString(),
     inspectedBy: settings.username,
     entry: {
@@ -111,6 +112,11 @@ function bulurumEntryToDomainEntry(settings, bulurumEntry) {
     },
     rawEntry: bulurumEntry
   }
+}
+
+function showSmallLoader(show = true) {
+  if (show) document.querySelector('#small-loader').style.display = ''
+  else document.querySelector('#small-loader').style.display = 'none'
 }
 
 function copy(str, mimeType) {
@@ -144,11 +150,68 @@ async function handleNewEntry(msg) {
       let span = document.querySelector(duplicateId)
       span.style['text-decoration'] = 'line-through'
     })
+
+    const flaggedPhones = entryDoc.entry.phones.map((p) => {
+      if (duplicates.indexOf(p.number) > -1) {
+        return {
+          ...p,
+          duplicate: true
+        }
+      } else {
+        return p
+      }
+    })
+
+    const entryDocWithDuplicatesFlagged = {
+      ...entryDoc,
+      entry: {
+        ...entryDoc.entry,
+        phones: flaggedPhones
+      }
+    }
+
+    document.querySelector('#entry-json').value = JSON.stringify(
+      entryDocWithDuplicatesFlagged,
+      null,
+      '  '
+    )
+
+    enableEntrySubmission(entryDocWithDuplicatesFlagged, settings)
   } catch (err) {
-    document
-      .querySelector('body')
-      .appendChild(document.createTextNode(err.toString()))
+    displayError(err.toString())
   }
+}
+
+function displayError(errorMessage) {
+  let sections = [
+    ...document.querySelectorAll('body > .container > .middle > section')
+  ]
+  sections.forEach((n) => {
+    n.style.display = 'none'
+  })
+
+  const errorText = document.createTextNode(errorMessage)
+  const errorSection = document.createElement('section')
+  errorSection.appendChild(errorText)
+  document
+    .querySelector('body > .container > .middle')
+    .appendChild(errorSection)
+}
+
+function displaySuccess(response) {
+  let sections = [
+    ...document.querySelectorAll('body > .container > .middle > section')
+  ]
+  sections.forEach((n) => {
+    n.style.display = 'none'
+  })
+
+  const successText = document.createTextNode('Success! ' + response.id)
+  const successSection = document.createElement('section')
+  successSection.appendChild(successText)
+  document
+    .querySelector('body > .container > .middle')
+    .appendChild(successSection)
 }
 
 function fillPreviewTable(entryDoc) {
@@ -171,6 +234,7 @@ function fillPreviewTable(entryDoc) {
 function createRow(leftColText, rightColText, rightSpanId) {
   let row = document.createElement('tr')
   let leftCol = document.createElement('td')
+  leftCol.className = 'font-bold'
   leftCol.appendChild(document.createTextNode(leftColText))
 
   let rightCol = document.createElement('td')
@@ -205,22 +269,76 @@ async function getSettings() {
   })
 }
 
+function enableEntrySubmission(entryDoc, settings) {
+  saveButton.className = [
+    'bg-red-900',
+    ...saveButton.className
+      .split(' ')
+      .filter((c) => c != 'cursor-not-allowed' && c != 'bg-gray-400')
+  ].join(' ')
+  saveButton.onclick = (e) => {
+    disableEntrySubmission()
+    saveEntry(entryDoc, settings).catch((err) => {
+      throw err
+    })
+  }
+}
+
+function disableEntrySubmission() {
+  saveButton.className = [
+    'bg-gray-400',
+    'cursor-not-allowed',
+    ...saveButton.className.split(' ').filter((c) => c != 'bg-gray-400')
+  ].join(' ')
+  saveButton.onclick = null
+}
+
+async function saveEntry(entryDoc, settings) {
+  try {
+    showSmallLoader(true)
+    let url = `https://couch.markcarrier.info/${settings.target}/`
+    let headers = {
+      Authorization:
+        'Basic ' + btoa(settings.username + ':' + settings.password),
+      Accept: 'application/json',
+      'Content-Type': 'application/json'
+    }
+    const httpResponse = await fetch(url, {
+      method: 'POST',
+      headers: headers,
+      body: JSON.stringify(entryDoc)
+    })
+
+    showSmallLoader(false)
+    if (!httpResponse.ok) {
+      displayError(
+        `Could not save entry. ${httpResponse.status} ${httpResponse.statusText}`
+      )
+    } else {
+      const couchResponse = await httpResponse.json()
+      displaySuccess(couchResponse)
+    }
+  } catch (badError) {
+    displayError(badError.toString())
+  }
+}
+
 async function checkForDuplicateNumbers(entryDoc, settings) {
+  showSmallLoader(true)
   //https://couch.markcarrier.info/altinkum-test/_design/views/_view/numbers?keys=[%220242%20248%2088%2066%22,%220242%20247%2098%2085%22]
   const numbersToCheckArray = encodeURIComponent(
     JSON.stringify(entryDoc.entry.phones.map((p) => p.number))
   )
   let url = `https://couch.markcarrier.info/${settings.target}/_design/views/_view/numbers?keys=${numbersToCheckArray}`
-  let headers = new Headers()
-  headers.set(
-    'Authorization',
-    'Basic ' + btoa(settings.username + ':' + settings.password)
-  )
+  let headers = {
+    Authorization: 'Basic ' + btoa(settings.username + ':' + settings.password)
+  }
   const httpResponse = await fetch(url, { method: 'GET', headers: headers })
 
+  showSmallLoader(false)
   if (!httpResponse.ok) {
     throw new Error(
-      `Error connecting to the store: ${httpResponse.status} ${httpResponse.statusText}`
+      `Could not connect to the store. Check your settings. ${httpResponse.status} ${httpResponse.statusText}`
     )
   }
 
