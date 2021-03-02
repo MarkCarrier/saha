@@ -8,6 +8,8 @@
 [x] Add index check
 [x] Remove duplicate numbers
 [x] Add Saving to couch
-[ ] Create source id index and check if already exists
 [ ] Add simple list view
 [ ] Assignments
+[x] Create source id index 
+[ ] Block saving if already exists
+[ ] Allow updating if already exists
