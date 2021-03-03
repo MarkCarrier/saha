@@ -198,7 +198,7 @@ function displayError(errorMessage) {
     .appendChild(errorSection)
 }
 
-function displaySuccess(response) {
+function displaySuccess(response, settings) {
   let sections = [
     ...document.querySelectorAll('body > .container > .middle > section')
   ]
@@ -206,12 +206,18 @@ function displaySuccess(response) {
     n.style.display = 'none'
   })
 
-  const successText = document.createTextNode('Success! ' + response.id)
-  const successSection = document.createElement('section')
-  successSection.appendChild(successText)
-  document
-    .querySelector('body > .container > .middle')
-    .appendChild(successSection)
+  document.querySelector('#success').style.display = ''
+  document.querySelector('#view-entries').onclick = (e) => {
+    chrome.tabs.create({
+      url: `https://saha.markcarrier.info/#/a/${settings.target}`
+    })
+  }
+  // const successText = document.createTextNode('Success! ' + response.id)
+  // const successSection = document.createElement('section')
+  // successSection.appendChild(successText)
+  // document
+  //   .querySelector('body > .container > .middle')
+  //   .appendChild(successSection)
 }
 
 function fillPreviewTable(entryDoc) {
@@ -285,12 +291,13 @@ function enableEntrySubmission(entryDoc, settings) {
 }
 
 function disableEntrySubmission() {
-  saveButton.className = [
-    'bg-gray-400',
-    'cursor-not-allowed',
-    ...saveButton.className.split(' ').filter((c) => c != 'bg-gray-400')
-  ].join(' ')
-  saveButton.onclick = null
+  saveButton.style.display = 'none'
+  // saveButton.className = [
+  //   'bg-gray-400',
+  //   'cursor-not-allowed',
+  //   ...saveButton.className.split(' ').filter((c) => c != 'bg-gray-400')
+  // ].join(' ')
+  // saveButton.onclick = null
 }
 
 async function saveEntry(entryDoc, settings) {
@@ -316,7 +323,7 @@ async function saveEntry(entryDoc, settings) {
       )
     } else {
       const couchResponse = await httpResponse.json()
-      displaySuccess(couchResponse)
+      displaySuccess(couchResponse, settings)
     }
   } catch (badError) {
     displayError(badError.toString())
