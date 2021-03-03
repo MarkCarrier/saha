@@ -26,7 +26,7 @@ export default function AccessPicker() {
   // }, [accessList])
 
   if (accessList.length === 1)
-    return <Redirect to={`/a/0/${accessList[0].catalog}`} />
+    return <Redirect to={`/a/${accessList[0].catalog}`} />
 
   return (
     <div className="px-4 py-6 sm:px-0">
@@ -41,7 +41,7 @@ export default function AccessPicker() {
       )}
       {accessList.map((a, idx) => {
         return (
-          <Link key={idx} to={`/a/${idx}/${a.catalog}`}>
+          <Link key={idx} to={`/a/${a.catalog}`}>
             <div className="w-96 mx-auto border p-10 rounded-lg mb-8 bg-yellow-200 hover:bg-yellow-400">
               <span className="text-2xl font-bold">{a.catalog}</span>
               <br />

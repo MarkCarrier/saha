@@ -1,5 +1,7 @@
 //https://tailwindui.com/components/application-ui/application-shells/stacked
 
+import { Link } from 'react-router-dom'
+
 export default function Nav() {
   return (
     <nav className="bg-red-900">
@@ -7,11 +9,15 @@ export default function Nav() {
         <div className="flex items-center justify-between h-16">
           <div className="flex items-center">
             <div className="flex-shrink-0">
-              <img className="h-8 w-8" src="/suitcase.svg" alt="Suitcase" />
+              <Link to="/">
+                <img className="h-8 w-8" src="/suitcase.svg" alt="Suitcase" />
+              </Link>
             </div>
             <div className="hidden md:block">
               <div className="ml-10 flex items-baseline space-x-4">
-                <span className="text-white font-bold text-2xl">Saha</span>
+                <Link to="/" className="text-white font-bold text-2xl">
+                  Saha
+                </Link>
               </div>
             </div>
           </div>

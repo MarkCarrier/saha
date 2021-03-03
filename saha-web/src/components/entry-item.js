@@ -15,6 +15,7 @@ export default function EntryItem({ entryDoc }) {
             className="ml-4 underline"
             href={entryDoc.entry.url}
             target="_blank"
+            rel="noreferrer"
           >
             View
           </a>
