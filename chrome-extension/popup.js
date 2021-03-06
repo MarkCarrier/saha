@@ -78,12 +78,12 @@ function bulurumEntryToDomainEntry(settings, bulurumEntry) {
     throw new Error('Invalid entry. id, name and url required')
   }
 
-  let otherPhones = bulurumEntry.otherTel.split('\n').map(otherPhoneToPhone)
+  let otherPhones = bulurumEntry.otherTel?.split('\n').map(otherPhoneToPhone)
   let allPhones = [
     { number: formatNumber(bulurumEntry.tel) },
     { number: formatNumber(bulurumEntry.mobile), label: 'cep' },
     { number: formatNumber(bulurumEntry.fax), label: 'fax' },
-    ...otherPhones
+    ...(otherPhones || [])
   ]
 
   let validPhoneIndex = allPhones.reduce((acc, next) => {
@@ -144,6 +144,11 @@ async function handleNewEntry(msg) {
       null,
       '  '
     )
+    let alreadyDone = await checkForDuplicateEntry(entryDoc, settings)
+    if (alreadyDone) {
+      displayError('Already saved')
+      return
+    }
     let duplicates = await checkForDuplicateNumbers(entryDoc, settings)
     duplicates.forEach((d) => {
       let duplicateId = `#phone-${getPhoneId(d)}`
@@ -328,6 +333,30 @@ async function saveEntry(entryDoc, settings) {
   } catch (badError) {
     displayError(badError.toString())
   }
+}
+
+async function checkForDuplicateEntry(entryDoc, settings) {
+  showSmallLoader(true)
+  //https://couch.markcarrier.info/altinkum-test/_design/views/_view/numbers?keys=[%220242%20248%2088%2066%22,%220242%20247%2098%2085%22]
+  const externalId = `${entryDoc.entry.sourceId.type}-${entryDoc.entry.sourceId.id}`
+  let url = `https://couch.markcarrier.info/${
+    settings.target
+  }/_design/views/_view/source-id?key="${encodeURIComponent(externalId)}"`
+  let headers = {
+    Authorization: 'Basic ' + btoa(settings.username + ':' + settings.password)
+  }
+  const httpResponse = await fetch(url, { method: 'GET', headers: headers })
+
+  showSmallLoader(false)
+  if (!httpResponse.ok) {
+    throw new Error(
+      `Could not connect to the store. Check your settings. ${httpResponse.status} ${httpResponse.statusText}`
+    )
+  }
+
+  const couchResponse = await httpResponse.json()
+
+  return couchResponse.rows.length > 0
 }
 
 async function checkForDuplicateNumbers(entryDoc, settings) {

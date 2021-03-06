@@ -1,13 +1,19 @@
 {
   "name": "Saha Süpürgesi",
-  "description": "Phone data collection helper",
-  "version": "0.1.0",
+  "description": "Contact Data Collection Helper",
+  "version": "0.0.1",
   "manifest_version": 2,
   "background": {
     "scripts": ["background.js"],
     "persistent": false
   },
-  "permissions": ["activeTab", "declarativeContent", "storage","https://couch.markcarrier.info/"],
+  "permissions": [
+    "activeTab",
+    "declarativeContent",
+    "storage",
+    "https://couch.markcarrier.info/",
+    "https://saha.markcarrier.info/"
+  ],
   "options_page": "options.html",
   "page_action": {
     "default_popup": "popup.html",

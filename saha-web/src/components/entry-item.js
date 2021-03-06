@@ -1,6 +1,6 @@
 export default function EntryItem({ entryDoc }) {
   return (
-    <div className="w-full">
+    <div className="w-full mb-1">
       <div
         className="flex flex-col border rounded p-4 mx-4 md:mx-0"
         title={JSON.stringify(entryDoc.entry, null, ' ')}
@@ -17,7 +17,7 @@ export default function EntryItem({ entryDoc }) {
             target="_blank"
             rel="noreferrer"
           >
-            View
+            {`View@${entryDoc.entry.sourceId.type}`}
           </a>
         </div>
         <div className="text-sm">

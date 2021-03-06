@@ -10,11 +10,11 @@ let fax = document.querySelector('#FaxContLbl')?.innerText
 let mobile = document.querySelector('#MobileContLbl')?.innerText
 let category = document.querySelectorAll('.categoryDirPath')[0]?.innerText
 
-let otherTel = document
-  .querySelector('.otherPhoneHeader')
-  .parentElement.parentElement.querySelector(
-    '.tab_cont_descr.tab_cont_descr_content_OnlyFree'
-  )?.innerText
+let otherTel = null
+let otherPhoneHeader = document.querySelector('.otherPhoneHeader')
+otherTel = otherPhoneHeader?.parentElement?.parentElement?.querySelector(
+  '.tab_cont_descr.tab_cont_descr_content_OnlyFree'
+)?.innerText
 
 let metaProperties = [...document.querySelectorAll('meta')]
   .filter(

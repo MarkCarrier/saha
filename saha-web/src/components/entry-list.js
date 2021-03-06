@@ -8,7 +8,7 @@ export default function EntryList({ access }) {
 
   useEffect(() => {
     async function getLatestEntries() {
-      let url = `https://couch.markcarrier.info/${access.catalog}/_design/views/_view/inspection-time?include_docs=true`
+      let url = `https://couch.markcarrier.info/${access.catalog}/_design/views/_view/inspection-time?include_docs=true&descending=true`
       let headers = {
         Authorization: 'Basic ' + btoa(access.name + ':' + access.chiffre)
       }
@@ -32,6 +32,6 @@ export default function EntryList({ access }) {
   if (errorMsg) return <span>{errorMsg}</span>
 
   return entries.map((entryDoc) => {
-    return <EntryItem key={entryDoc.id} entryDoc={entryDoc} />
+    return <EntryItem key={entryDoc.id} entryDoc={entryDoc} className="mt-2" />
   })
 }
