@@ -8,7 +8,7 @@ export default function GetExtension() {
         </a>
         .
       </div>
-      <div class="w-96 text-left mx-auto">
+      <div className="w-96 text-left mx-auto">
         Then:
         <ul>
           <li className="list-disc">Unzip the file content into a folder</li>

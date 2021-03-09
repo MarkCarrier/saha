@@ -32,6 +32,13 @@ export default function EntryList({ access }) {
   if (errorMsg) return <span>{errorMsg}</span>
 
   return entries.map((entryDoc) => {
-    return <EntryItem key={entryDoc.id} entryDoc={entryDoc} className="mt-2" />
+    return (
+      <EntryItem
+        key={entryDoc.id}
+        entryDoc={entryDoc}
+        access={access}
+        className="mt-2"
+      />
+    )
   })
 }

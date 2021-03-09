@@ -30,10 +30,10 @@ function App() {
                 <span className="text-3xl font-bold text-gray-900">
                   Entries
                 </span>
-                <div class="ml-4 bg-red-700 w-8 h-8 rounded p-1 float-right">
+                <div className="ml-4 bg-red-700 w-8 h-8 rounded p-1 float-right">
                   <Link
                     to="/get-extension"
-                    class="text-white hover:text-white focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-800 focus:ring-white"
+                    className="text-white hover:text-white focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-800 focus:ring-white"
                   >
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
