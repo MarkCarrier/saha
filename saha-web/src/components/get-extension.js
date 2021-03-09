@@ -3,7 +3,7 @@ export default function GetExtension() {
     <div className="w-full mt-20 text-center">
       <div className="text-3xl font-bold mb-4">
         You can download the Chrome Extension{' '}
-        <a className="underline" href="/saha-chrome-extension-0.0.1.zip">
+        <a className="underline" href="/saha-chrome-extension.zip">
           here
         </a>
         .

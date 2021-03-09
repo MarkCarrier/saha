@@ -39,10 +39,14 @@ function otherPhoneToPhone(otherPhoneString) {
       number: formatNumber(parts[0]),
       label: ''
     }
-  } else if (parts.length == 2) {
+  } else if (parts.length > 1) {
     return {
       number: formatNumber(parts[0]),
-      label: parts[1]?.replace('(', '').replace(')', '').trim()
+      label: otherPhoneString
+        .replace(parts[0], '')
+        .replace('(', '')
+        .replace(')', '')
+        .trim()
     }
   } else {
     throw new Error(`Unexpected other phone format: "${otherPhoneString}"`)
@@ -86,6 +90,7 @@ function bulurumEntryToDomainEntry(settings, bulurumEntry) {
     ...(otherPhones || [])
   ]
 
+  //Remove duplicates and nulls
   let validPhoneIndex = allPhones.reduce((acc, next) => {
     if (next && next.number && !acc[next.number]) acc[next.number] = next
     return acc
